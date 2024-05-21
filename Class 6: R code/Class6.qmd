@@ -1,0 +1,258 @@
+---
+title: "Class 6: R functions"
+author: "Kevin (A16482696)"
+format: pdf
+---
+
+Functions are how we get work done in R. We call functions to do everything from reading data to doing analysis and outputing plots and resutls. 
+
+All functions in R have at least 3 thing:
+
+- a **name** (you get to pick this)
+- input **arguments** (there can be only one or loads - again your call)
+- the **body**(where the work gets done, this code between the curly brackets)
+
+## A First silly function
+
+Let's write a function to add ome numbers. We can call it `add()`
+
+```{r}
+x <- 10
+y <- 10
+x + y
+```
+
+```{r}
+add <- function(x){
+  y <- 10
+  x + y
+}
+  
+```
+
+Can I just use my new function?
+
+```{r}
+add(1)
+```
+
+Let's make it a bit more flexible
+
+```{r}
+add <- function(x,y=1){
+  x + y
+}
+
+add(x=10,y=10)
+```
+```{r}
+add(10)
+```
+
+```{r}
+add(10,100)
+```
+
+## 2nd example grade() function
+
+Write a function to grade student work. 
+
+We will start with a simple version of the problem and the following example student vectors:
+
+```{r}
+# Example input vectors to start with
+student1 <- c(100, 100, 100, 100, 100, 100, 100, 90)
+student2 <- c(100, NA, 90, 90, 90, 90, 97, 80)
+student3 <- c(90, NA, NA, NA, NA, NA, NA, NA)
+
+```
+
+Start with student1
+```{r}
+min(student1)
+```
+
+
+Google told me about min() and max()
+
+```{r}
+min(student1)
+```
+```{r}
+which.min(student1)
+```
+```{r}
+student1[8]
+```
+
+```{r}
+student1[which.min(student1)]
+```
+
+```{r}
+student1[-8]
+```
+
+Our first working snippet that drops the lowest score and calculates the mean.
+
+```{r}
+mean(student1[-which.min(student1)])
+```
+
+```{r}
+x <- student1
+mean(x[-which.min(x)])
+```
+
+Our appraoch to the NA problem (missing homeworks): We can replace all NA values with zero. 
+
+1st Taske is find the A values(i.e. where are they in the vector)
+```{r}
+x <- student2
+```
+
+```{r}
+x
+is.na(x)
+```
+
+I have found the NA (TRUE) values from `is.na()` now I want to make them equal to zero (overwrite them/mask them etc.)
+
+```{r}
+y <- 1:5
+y
+y[y>3] <- 0
+y
+```
+
+
+I want to combine the `is.na(x)` with making these elements equal to zero. 
+And then take this "masked" (vector of student scores with NA values as zero) and drop the lowest and get the mean
+
+```{r}
+x[is.na(x)] <- 0
+x
+```
+
+```{r}
+mean(x[-which.min(x)])
+```
+
+```{r}
+x <- student2
+x[is.na(x)] <- 0
+mean(x[-which.min(x)])
+```
+
+Now I can turn my most awesome snipet into my first function.
+
+```{r}
+grade <- function(x){
+  # MAKE NA (Missing work) equal to zero
+  x[is.na(x)] <- 0
+  # Drop lowest scroe and get mean
+  mean(x[-which.min(x)])
+}
+```
+
+```{r}
+grade(student3)
+```
+>Write a function grade() to determine an overall grade from a vector of student homework
+assignment scores dropping the lowest single score. If a student misses a homework (i.e. has an
+NA value) this can be used as a score to be potentially dropped. Your final function should be
+adquately explained with code comments and be able to work on an example class gradebook
+such as this one in CSV format: “https://tinyurl.com/gradeinput” [3pts]
+
+```{r}
+url <- "https://tinyurl.com/gradeinput"
+gradebook <- read.csv(url, row.names = 1)
+head(gradebook)
+```
+
+The `apply()` function in R is super useful but can be little confusing to begin with. Lets have a look how it works
+
+```{r}
+ans <- apply(gradebook, 1, grade)
+ans
+```
+
+
+> Using your grade() function and the supplied gradebook, Who is the top scoring student
+overall in the gradebook? [3pts]
+
+```{r}
+which.max(ans)
+max(ans)
+```
+
+>From your analysis of the gradebook, which homework was toughest on students (i.e. obtained
+the lowest scores overall?
+
+```{r}
+which.min(apply(gradebook, 2, mean, na.rm=TRUE))
+```
+
+> Optional Extension: From your analysis of the gradebook, which homework was most
+predictive of overall score (i.e. highest correlation with average grade score)? [1pt]
+
+```{r}
+#ans
+cor(gradebook$hw1,ans)
+
+```
+
+```{r}
+cor(gradebook$hw5,ans)
+```
+
+Mask all the NA values to zero in gradebook
+```{r}
+mask <- gradebook
+mask[is.na(mask)] <- 0
+mask
+```
+
+```{r}
+cor(mask$hw2, ans)
+```
+
+Now we can use `apply()` to examine the correlatino of every assignment in the masked gradebook to the overall score for each student in the class
+
+```{r}
+apply(mask, 2, cor, y=ans)
+```
+
+> Make sure you save your Quarto document and can click the “Render” (or Rmarkdown”Knit”) button to generate a PDF foramt report without errors. Finally, submit your PDF
+to gradescope. [1pt]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
