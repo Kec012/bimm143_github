@@ -6,4 +6,3 @@ My classwork for Bimm 143 at UC San Diego
  - Class 6 [R function](https://github.com/Kec012/bimm143_github/tree/main/Class%206%3A%20R%20code)
  - Class 7 []()
 
-This repo is for my UCSD bioinformatics class. 
